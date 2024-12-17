@@ -30,8 +30,9 @@ class QueryRequest(BaseModel):
 class RetrievedPassage(BaseModel):
 	content: str
 	doc_id: str
+	metadata: Dict
 	filepath: Optional[str] = None
-	file_page: Optional[int] = None
+	#file_page: Optional[int] = None
 	start_idx: Optional[int] = None
 	end_idx: Optional[int] = None
 
@@ -46,7 +47,7 @@ class VersionResponse(BaseModel):
 
 
 empty_retrieved_passage = RetrievedPassage(
-	content="", doc_id="", filepath=None, file_page=None, start_idx=None, end_idx=None
+	content="", doc_id="", filepath=None,  metadata={},start_idx=None, end_idx=None
 )
 
 
@@ -220,7 +221,8 @@ class ApiRunner(BaseRunner):
 					content=content,
 					doc_id=doc_id,
 					filepath=path,
-					file_page=metadata.get("page", None),
+					#file_page=metadata.get("page", None),
+					metadata=metadata,
 					start_idx=start_end_idx[0] if start_end_idx else None,
 					end_idx=start_end_idx[1] if start_end_idx else None,
 				),
