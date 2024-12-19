@@ -13,7 +13,7 @@ logger = logging.getLogger("AutoRAG")
 class LongContextReorder(BasePromptMaker):
 	@result_to_dataframe(["prompts"])
 	def pure(self, previous_result: pd.DataFrame, *args, **kwargs):
-		query, retrieved_contents, chat_summary,prompt = self.cast_to_run(
+		query, retrieved_contents, chat_summary,core_memory,prompt = self.cast_to_run(
 			previous_result, *args, **kwargs
 		)
 		
@@ -22,7 +22,7 @@ class LongContextReorder(BasePromptMaker):
 		), "previous_result must have retrieve_scores column."
 		retrieve_scores = previous_result["retrieve_scores"].tolist()
 		
-		return self._pure(prompt, query, retrieved_contents, retrieve_scores,chat_summary)
+		return self._pure(prompt, query, retrieved_contents, retrieve_scores,chat_summary,core_memory)
 
 	def _pure(
 		self,
@@ -30,7 +30,8 @@ class LongContextReorder(BasePromptMaker):
 		queries: List[str],
 		retrieved_contents: List[List[str]],
 		retrieve_scores: List[List[float]],
-		chat_summary: str#List[str]
+		chat_summary: str,
+		core_memory: str#List[str]
 	) -> List[str]:
 		"""
 		Models struggle to access significant details found
@@ -61,7 +62,8 @@ class LongContextReorder(BasePromptMaker):
 			_query: str,
 			_retrieved_contents: List[str],
 			_retrieve_scores: List[float],
-			_chat_summary: str
+			_chat_summary: str,
+			_core_memory: str
 		) -> str:
 			if isinstance(_retrieved_contents, np.ndarray):
 				_retrieved_contents = _retrieved_contents.tolist()
@@ -79,14 +81,21 @@ class LongContextReorder(BasePromptMaker):
 			_retrieved_contents.append(content_result[0])
 			contents_str = "\n\n".join(_retrieved_contents)
 			
-			return _prompt.format(query=_query, retrieved_contents=contents_str,chat_summary=_chat_summary)
+			return _prompt.format(query=_query, retrieved_contents=contents_str,chat_summary=_chat_summary,core_memory=_core_memory)
 		
 	
 
+		# import ipdb;ipdb.set_trace()
+
+		# xx = list(map(lambda x: long_context_reorder_row(prompt, x[0],x[1],x[2],x[3],x[4]), zip(queries, retrieved_contents, retrieve_scores,chat_summary,core_memory)))
+
+		# xx = list(long_context_reorder_row(prompt, queries[0],retrieved_contents[0], retrieve_scores[0],chat_summary[0],core_memory[0]))
 		
-		return list(
+		zz = list(
 			map(
-				lambda x: long_context_reorder_row(prompt, x[0], x[1], x[2],x[3]),
-				zip(queries, retrieved_contents, retrieve_scores,chat_summary),
-			)
-		)
+				lambda x: long_context_reorder_row(prompt, x[0], x[1], x[2],x[3],x[4]),
+				zip(queries, retrieved_contents, retrieve_scores,chat_summary,core_memory),
+			))
+		
+		
+		return zz

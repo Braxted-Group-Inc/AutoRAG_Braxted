@@ -24,6 +24,7 @@ VERSION_PATH = os.path.join(root_dir, "VERSION")
 class QueryRequest(BaseModel):
 	query: str
 	chat_summary: Optional[str] = ""
+	core_memory: Optional[str]= ""
 	result_column: Optional[str] = "generated_texts"
 
 
@@ -78,6 +79,7 @@ class ApiRunner(BaseRunner):
 					"qid": str(uuid.uuid4()),
 					"query": [data.query],
 					"chat_summary": [data.chat_summary],
+					"core_memory":[data.core_memory],
 					"retrieval_gt": [[]],
 					"generation_gt": [""],
 				}
@@ -120,6 +122,7 @@ class ApiRunner(BaseRunner):
 						"qid": str(uuid.uuid4()),
 						"query": [data.query],
 						"chat_summary": [data.chat_summary],
+						"core_memory": [data.core_memory],
 						"retrieval_gt": [[]],
 						"generation_gt": [""],
 					}
@@ -179,6 +182,8 @@ class ApiRunner(BaseRunner):
 
 		    {
 		        "query": "your query",
+				"chat_summary": "the conversation summary",
+				"core_memory": "the core memory of the agent"
 		        "result_column": "generated_texts"
 		    }
 

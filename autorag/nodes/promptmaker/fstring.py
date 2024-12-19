@@ -9,13 +9,13 @@ from autorag.utils import result_to_dataframe
 class Fstring(BasePromptMaker):
 	@result_to_dataframe(["prompts"])
 	def pure(self, previous_result: pd.DataFrame, *args, **kwargs):
-		query, retrieved_contents, chat_summary, prompt = self.cast_to_run(
+		query, retrieved_contents, chat_summary,core_memory, prompt = self.cast_to_run(
 			previous_result, *args, **kwargs
 		)
-		return self._pure(prompt, query, retrieved_contents, chat_summary)
+		return self._pure(prompt, query, retrieved_contents, chat_summary,core_memory)
 
 	def _pure(
-		self, prompt: str, queries: List[str], retrieved_contents: List[List[str]], chat_summary: str
+		self, prompt: str, queries: List[str], retrieved_contents: List[List[str]], chat_summary: str, core_memory: str
 	) -> List[str]:
 		"""
 		Make a prompt using f-string from a query and retrieved_contents.
@@ -26,7 +26,7 @@ class Fstring(BasePromptMaker):
 		- node_type: prompt_maker
 		  modules:
 		  - module_type: fstring
-			prompt: [Answer this question: {query} \n\n with this message summary {summary} \n\n and these retrieved contents {retrieved_contents},
+			prompt: [Answer this question: {query} \n\n with this message summary {summary} \n\n and with the core memory {core_memory}\n\n  and these retrieved contents {retrieved_contents},
 			Read the passages carefully and answer this question: {query} \n\n Passages: {retrieved_contents}]
 
 		:param prompt: A prompt string.
@@ -37,14 +37,14 @@ class Fstring(BasePromptMaker):
 		"""
 
 		def fstring_row(
-			_prompt: str, _query: str, _retrieved_contents: List[str], _chat_summary: str
+			_prompt: str, _query: str, _retrieved_contents: List[str], _chat_summary: str, _core_memory: str
 		) -> str:
 			contents_str = "\n\n".join(_retrieved_contents)
-			return _prompt.format(query=_query, retrieved_contents=contents_str, summary=_chat_summary)
+			return _prompt.format(query=_query, retrieved_contents=contents_str, summary=_chat_summary,core_memory=core_memory)
 
 		return list(
 			map(
-				lambda x: fstring_row(prompt, x[0], x[1],x[2]),
-				zip(queries, retrieved_contents,chat_summary),
+				lambda x: fstring_row(prompt, x[0], x[1],x[2],x[3],x[4]),
+				zip(queries, retrieved_contents,chat_summary,core_memory),
 			)
 		)

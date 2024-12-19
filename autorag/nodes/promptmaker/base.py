@@ -31,8 +31,13 @@ class BasePromptMaker(BaseModule, metaclass=ABCMeta):
 		assert (
 			"chat_summary" in previous_result.columns
 		)
+
+		assert (
+			"core_memory" in previous_result.columns
+		)
 		query = previous_result["query"].tolist()
 		retrieved_contents = previous_result["retrieved_contents"].tolist()
 		prompt = kwargs.pop("prompt")
 		chat_summary = previous_result["chat_summary"].tolist()
-		return query, retrieved_contents, chat_summary, prompt
+		core_memory = previous_result["core_memory"].tolist()
+		return query, retrieved_contents, chat_summary, core_memory, prompt
