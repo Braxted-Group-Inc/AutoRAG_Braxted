@@ -23,6 +23,7 @@ VERSION_PATH = os.path.join(root_dir, "VERSION")
 
 class QueryRequest(BaseModel):
 	query: str
+	core_memory: Optional[str] = ""
 	chat_summary: Optional[str] = ""
 	result_column: Optional[str] = "generated_texts"
 
